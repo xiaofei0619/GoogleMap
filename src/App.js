@@ -1,11 +1,11 @@
-import MyMap from './components/MyMap.jsx';
+// import MyMap from './components/MyMap.jsx';
+import Map from './Map.jsx';
 
 function App() {
   return (
     <div>
-      <p>Google Map</p>
       <div style={{ maxHeight: '550px' }}>
-        <MyMap />
+        <Map />
       </div>
     </div>
   );
