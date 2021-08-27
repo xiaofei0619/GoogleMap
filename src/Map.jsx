@@ -1,4 +1,5 @@
 import React from 'react';
+import { Alert } from 'rsuite';
 import {
   GoogleMap,
   useLoadScript,
@@ -46,6 +47,9 @@ export default function Map() {
     lng: null,
   });
   const [selected, setSelected] = React.useState(null);
+  const onSetSelected = React.useCallback(() => {
+    setSelected(1);
+  }, []);
 
   const mapRef = React.useRef();
   const onMapLoad = React.useCallback((map) => {
@@ -71,6 +75,7 @@ export default function Map() {
         AwesomeDimsum <span role="img" aria-label="tent">🥢</span>
       </h2>
       <Search panTo={panTo} />
+      <Locate panTo={panTo} />
       <GoogleMap
         mapContainerStyle={mapContainerStyle}
         zoom={12}
@@ -84,9 +89,7 @@ export default function Map() {
             url: '/Logo2.png',
             scaledSize: new window.google.maps.Size(60, 60),
           }}
-          onClick={() => {
-            setSelected(1);
-          }}
+          onClick={onSetSelected}
         />
         {selected ? (
           <InfoWindow
@@ -110,6 +113,36 @@ export default function Map() {
         ) : null}
       </GoogleMap>
     </div>
+  );
+}
+
+function Locate({ panTo }) {
+  const getLocation = () => {
+    if (!navigator.geolocation) {
+      Alert.error('Geolocation is not supported by your browser!', 5000);
+    } else {
+      Alert.success('Locating...', 5000);
+      navigator.geolocation.getCurrentPosition((position) => {
+        Alert.success('Success!', 3000);
+        panTo({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        })
+      }, () => null
+    //   }, (err) => {
+    //     Alert.error('Unable to retrieve your location!', err, 5000);
+    //     console.log(err);
+    //   }
+      );
+    }
+  };
+  return (
+    <button
+      className="locate"
+      onClick={getLocation}
+    >
+      <img src="compass.svg" alt="Locate User Position"/>
+    </button>
   );
 }
 

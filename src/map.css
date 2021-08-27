@@ -22,3 +22,17 @@ h2 {
   font-size: 1.1rem;
   width: 100%;
 }
+
+.locate {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  z-index: 10;
+}
+
+.locate img {
+  width: 40px;
+  cursor: pointer;
+}
