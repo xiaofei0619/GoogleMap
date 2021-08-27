@@ -10,8 +10,8 @@ h2 {
 .search {
   position: absolute;
   top: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 40%;
+  transform: translateX(-40%);
   width: 100%;
   max-width: 400px;
   z-index: 10;
@@ -21,6 +21,16 @@ h2 {
   padding: 0.5rem;
   font-size: 1.1rem;
   width: 100%;
+}
+
+.mode {
+  position: absolute;
+  top: 1rem;
+  left: 74%;
+  transform: translateX(-74%);
+  width: 100%;
+  max-width: 270px;
+  z-index: 10;
 }
 
 .locate {
@@ -35,4 +45,9 @@ h2 {
 .locate img {
   width: 40px;
   cursor: pointer;
+}
+
+.map {
+  position: absolute;
+  z-index: -10;
 }
