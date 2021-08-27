@@ -7,6 +7,18 @@ import {
 } from "@react-google-maps/api";
 import mapStyles from './mapStyles.js';
 import './map.css';
+import usePlacesAutocomplete, {
+  getGeocode,
+  getLatLng,
+} from 'use-places-autocomplete';
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxPopover,
+  ComboboxList,
+  ComboboxOption,
+} from "@reach/combobox";
+import "@reach/combobox/styles.css";
 
 export default function Map() {
   const libraries = ['places'];
@@ -40,6 +52,12 @@ export default function Map() {
     mapRef.current = map;
   }, []);
 
+  const panTo = React.useCallback(({lat, lng}) => {
+    setStartMarker({ lat, lng });
+    mapRef.current.panTo({ lat, lng });
+    mapRef.current.setZoom(14);
+  }, []);
+
   if (loadError) {
     return 'Error Loading Maps!';
   }
@@ -52,6 +70,7 @@ export default function Map() {
       <h2>
         AwesomeDimsum <span role="img" aria-label="tent">🥢</span>
       </h2>
+      <Search panTo={panTo} />
       <GoogleMap
         mapContainerStyle={mapContainerStyle}
         zoom={12}
@@ -77,13 +96,69 @@ export default function Map() {
             }}
           >
             <div>
-              <h3>Awesome Dimsum</h3>
+              <h5>Awesome Dimsum</h5>
               <p>1210 Clear Water Bay Road</p>
               <p>Seattle, WA 98199, US</p>
             </div>
           </InfoWindow>
         ) : null}
+
+        {startMarker.lat ? (
+          <Marker
+            position={{ lat: startMarker.lat, lng: startMarker.lng }}
+          />
+        ) : null}
       </GoogleMap>
+    </div>
+  );
+}
+
+function Search({ panTo }) {
+  const {
+    ready,
+    value,
+    suggestions: { status, data },
+    setValue,
+    clearSuggestions,
+  } = usePlacesAutocomplete({
+    requestOptions: {
+      country: 'us',
+    },
+  });
+
+  const handleSelect = async (address) => {
+    setValue("", false);
+    clearSuggestions();
+    try {
+      const results = await getGeocode({ address });
+      const { lat, lng } = await getLatLng(results[0])
+      panTo({ lat, lng });
+    } catch (err) {
+      console.log("Error: ", err);
+    }
+  }
+
+  return (
+    <div className="search">
+      <Combobox onSelect={handleSelect}>
+        <ComboboxInput
+          value={value}
+          onChange={(e) => {
+            setValue(e.target.value);
+          }}
+          disabled={!ready}
+          placeholder='Enter Your Address...'
+        />
+        <ComboboxPopover>
+          <ComboboxList>
+            {status === "OK" &&
+              data.map(({ id, description }) => (
+                <ComboboxOption key={id} value={description} />
+              ))
+            }
+          </ComboboxList>
+        </ComboboxPopover>
+      </Combobox>
     </div>
   );
 }
