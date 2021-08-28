@@ -206,8 +206,10 @@ export default function Map() {
               options={{
                 directions: response
               }}
+              panel={document.getElementById("steps")}
             />
           )}
+          <div id="steps"></div>
         </GoogleMap>
       </div>
     </div>
