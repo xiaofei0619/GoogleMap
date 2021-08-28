@@ -8,6 +8,8 @@ import {
   useLoadScript,
   Marker,
   InfoWindow,
+  DirectionsService,
+  DirectionsRenderer,
 } from "@react-google-maps/api";
 import mapStyles from './mapStyles.js';
 import './map.css';
@@ -24,8 +26,10 @@ import {
 } from "@reach/combobox";
 import "@reach/combobox/styles.css";
 
+const libraries = ['places', 'geometry', 'drawing'];
+
 export default function Map() {
-  const libraries = ['places'];
+  // const libraries = ['places', 'geometry', 'drawing'];
   const mapContainerStyle = {
     width: '100vw',
     height: '100vh',
@@ -55,11 +59,41 @@ export default function Map() {
   }, []);
 
   const [travelMode, setTravelMode] = React.useState("DRIVING");
+  const [start, setStart] = React.useState(false);
+  const [response, setResponse] = React.useState(null);
+
   const onSetTravelMode = React.useCallback((event) => {
     const { target } = event;
     const { value } = target;
     setTravelMode(value);
   }, []);
+
+  const onSetStart = React.useCallback((e) => {
+    e.preventDefault();
+    setStart(true);
+  }, []);
+
+  const onDirections = React.useCallback((response) => {
+    if (response !== null) {
+      if (response.status === 'OK') {
+        setResponse(response);
+        setStart(false);
+      } else if (response.status === 'OVER_QUERY_LIMIT') {
+        setTimeout(3000);
+      } else {
+        console.log('Response with Error: ', response);
+      }
+    }
+  }, []);
+
+//   const onClearDirections = React.useCallback(() => {
+//     setResponse(null);
+//   }, []);
+
+  console.log('Debug...');
+  console.log(travelMode);
+  console.log(start);
+  console.log(response);
 
   const mapRef = React.useRef();
   const onMapLoad = React.useCallback((map) => {
@@ -97,10 +131,10 @@ export default function Map() {
               name="travelMode"
               onChange={onSetTravelMode}
             >
-              <option value="">Travel Mode</option>
+              <option value="DRIVING">Travel Mode</option>
               <option value="DRIVING">DRIVING</option>
               <option value="BICYCLING">BICYCLING</option>
-              <option value="TRANSIT">TRANSIT</option>
+              {/* <option value="TRANSIT">TRANSIT</option> */}
               <option value="WALKING">WALKING</option>
             </Form.Control>
           </Col>
@@ -110,7 +144,7 @@ export default function Map() {
               size="md"
               variant="dark"
               disabled={startMarker.lat === null}
-              // onClick={onSubmitOrder}
+              onClick={onSetStart}
             >
               GO!
             </Button>
@@ -154,6 +188,26 @@ export default function Map() {
               position={{ lat: startMarker.lat, lng: startMarker.lng }}
             />
           ) : null}
+
+          {(start === true) && (
+            <DirectionsService
+              options={{
+                origin: startMarker,
+                destination: center,
+                travelMode: travelMode,
+              }}
+              callback={onDirections}
+            />
+          )}
+
+          {response !== null && (
+            <DirectionsRenderer
+            //   directions={response}
+              options={{
+                directions: response
+              }}
+            />
+          )}
         </GoogleMap>
       </div>
     </div>

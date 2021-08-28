@@ -12,6 +12,8 @@ import PlacesAutocomplete, {
   getLatLng,
 } from 'react-places-autocomplete';
 
+// Routing Example with react-google-maps
+// https://github.com/tomchentw/react-google-maps/blob/master/src/components/DirectionsRenderer.md
 function Map() {
   const [selected, setSelected] = useState(null);
 
