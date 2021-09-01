@@ -13,7 +13,7 @@ h2 {
   left: 40%;
   transform: translateX(-40%);
   width: 100%;
-  max-width: 400px;
+  max-width: 380px;
   z-index: 10;
 }
 

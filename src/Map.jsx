@@ -29,7 +29,6 @@ import "@reach/combobox/styles.css";
 const libraries = ['places', 'geometry', 'drawing'];
 
 export default function Map() {
-  // const libraries = ['places', 'geometry', 'drawing'];
   const mapContainerStyle = {
     width: '100vw',
     height: '100vh',
@@ -80,15 +79,19 @@ export default function Map() {
         setStart(false);
       } else if (response.status === 'OVER_QUERY_LIMIT') {
         setTimeout(3000);
+        setStart(false);
       } else {
         console.log('Response with Error: ', response);
+        setStart(false);
       }
     }
   }, []);
 
-//   const onClearDirections = React.useCallback(() => {
-//     setResponse(null);
-//   }, []);
+  const onClear = React.useCallback((e) => {
+    e.preventDefault();
+    setResponse(null);
+    setStartMarker({ lat: null, lng: null });
+  }, []);
 
   console.log('Debug...');
   console.log(travelMode);
@@ -138,7 +141,7 @@ export default function Map() {
               <option value="WALKING">WALKING</option>
             </Form.Control>
           </Col>
-          <Col md={3} style={{ paddingLeft: '0' }}>
+          <Col md={3} style={{ paddingLeft: '0', paddingRight: '0' }}>
             <Button
               type="submit"
               size="md"
@@ -149,6 +152,17 @@ export default function Map() {
               GO!
             </Button>
           </Col>
+          {/* <Col md={3} style={{ paddingLeft: '0' }}>
+            <Button
+              type="submit"
+              size="md"
+              variant="dark"
+              disabled={response === null}
+              onClick={onClear}
+            >
+              Clear
+            </Button>
+          </Col> */}
         </Form.Group>
       </Form>
       </div>
@@ -202,14 +216,13 @@ export default function Map() {
 
           {response !== null && (
             <DirectionsRenderer
-            //   directions={response}
               options={{
                 directions: response
               }}
               panel={document.getElementById("steps")}
             />
           )}
-          <div id="steps"></div>
+          <div id="steps" style={{ padding: 0 }}></div>
         </GoogleMap>
       </div>
     </div>
